@@ -13,16 +13,11 @@
   </van-nav-bar>
 
   <div id="content">
-    <template v-if="active === 'index'">
-      <Index />
-    </template>
-    <template v-if="active === 'team'">
-      <Team />
-    </template>
+    <router-view></router-view>
   </div>
 
   <van-tabbar v-model="active" @change="onChange">
-    <van-tabbar-item icon="home-o" name="index">主页</van-tabbar-item>
+    <van-tabbar-item icon="home-o" name="">主页</van-tabbar-item>
     <van-tabbar-item icon="search" name="team">队伍</van-tabbar-item>
     <van-tabbar-item icon="friends-o" name="user">个人</van-tabbar-item>
   </van-tabbar>
@@ -30,15 +25,24 @@
 </template>
 
 <script setup>
-import Index from "../pages/Index.vue"
-import Team from "../pages/Team.vue"
 import {ref} from 'vue'
+import {useRouter} from 'vue-router'
 
-const onClickLeft = () => console.log('left')
-const onClickRight = () => console.log('right')
+const router = useRouter()
 
-const active = ref('index');
-const onChange = (index) => console.log(index)
+// nav's left and right click event
+const onClickLeft = () => {
+  router.push("/")
+}
+const onClickRight = () => {
+  router.push("/search")
+}
+
+// tabbar changed
+const active = ref('');
+const onChange = (index) => {
+  router.push(`/${index}`)
+}
 </script>
 
 <style scoped>

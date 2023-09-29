@@ -20,7 +20,9 @@ import org.springframework.util.DigestUtils;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -208,7 +210,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
 
     /**
-     * 根据标签搜索用户
+     * 根据标签搜索用户(内存过滤)
      *
      * @param tagNameList 用户要拥有的标签
      * @return
@@ -225,29 +227,38 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         Gson gson = new Gson();
 
         // 2.在内存中判断是否包含要求的标签
-        userList.stream().filter(user -> {
+        return userList.stream().filter(user -> {
             String tagsStr = user.getTags();
-            if(StringUtils.isBlank(tagsStr)){
-                return false;
-            }
-            Set<String> tempTagNameSet = gson.fromJson(tagsStr, new TypeToken<Set<String>>() {
-            }.getType());
+            Set<String> tempTagNameSet = gson.fromJson(tagsStr, new TypeToken<Set<String>>() {}.getType());
+            tempTagNameSet = Optional.ofNullable(tempTagNameSet).orElse(new HashSet<>());
             for (String tagName : tagNameList) {
-                if (tempTagNameSet.contains(tagName)) {
+                if (!tempTagNameSet.contains(tagName)) {
                     return false;
                 }
             }
             return true;
         }).map(this::getSafetyUser).collect(Collectors.toList());
+    }
 
-        queryWrapper  = new QueryWrapper<>();
-        for(String tagName : tagNameList){
+    /**
+     * 根据标签搜索用户(SQL查询版)
+     *
+     * @param tagNameList 用户要拥有的标签
+     * @return
+     */
+    @Deprecated
+    public List<User> searchUserByTagsBySQL(List<String> tagNameList) {
+        if (CollectionUtils.isEmpty(tagNameList)) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        for (String tagName : tagNameList) {
             queryWrapper = queryWrapper.like("tags", tagName);
         }
 
-        userList = userMapper.selectList(queryWrapper);
-
-        return userList;
+        List<User> userList = userMapper.selectList(queryWrapper);
+        return userList.stream().map(this::getSafetyUser).collect(Collectors.toList());
     }
 
 }
