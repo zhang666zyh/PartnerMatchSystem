@@ -4,6 +4,7 @@ const routes = [
     {path: '/', component: () => import("../pages/Index.vue")},
     {path: '/team', component: () => import("../pages/Team.vue")},
     {path: '/user', component: () => import("../pages/User.vue")},
+    {path: '/editUser', component: () => import("../pages/EditUser.vue")},
     {path: '/search', component: () => import("../pages/Search.vue")},
 ]
 

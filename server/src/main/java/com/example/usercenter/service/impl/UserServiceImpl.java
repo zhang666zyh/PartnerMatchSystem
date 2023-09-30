@@ -10,7 +10,6 @@ import com.example.usercenter.model.domain.User;
 import com.example.usercenter.model.domain.request.UserRegisterRequest;
 import com.example.usercenter.service.UserService;
 import com.google.gson.Gson;
-import com.google.gson.TypeAdapter;
 import com.google.gson.reflect.TypeToken;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -262,7 +261,3 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
 }
-
-
-
-

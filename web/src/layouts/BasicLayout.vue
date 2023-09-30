@@ -32,7 +32,7 @@ const router = useRouter()
 
 // nav's left and right click event
 const onClickLeft = () => {
-  router.push("/")
+  router.back()
 }
 const onClickRight = () => {
   router.push("/search")
