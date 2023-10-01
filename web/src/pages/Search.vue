@@ -26,11 +26,17 @@
       v-model:main-active-index="activeIndex"
       :items="tagList"
   />
+  <div style="margin:12px">
+    <van-button type="primary" block @click="doSearchResult">搜索</van-button>
+  </div>
 
 </template>
 
 <script setup>
 import {ref} from 'vue'
+import {useRouter} from 'vue-router'
+
+const router = useRouter()
 
 const searchText = ref('') // 搜索框绑定数据
 const activeIds = ref([]) // 已选择标签
@@ -72,6 +78,18 @@ const onCancel = () => {
 // delete actived tag
 const doClose = (tag) => {
   activeIds.value = activeIds.value.filter(item => item !== tag)
+}
+
+/**
+ * sunmit search
+ */
+const doSearchResult = () => {
+  router.push({
+    path: "/searchResult",
+    query: {
+      tags: activeIds.value
+    }
+  })
 }
 </script>
 

@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 public class ImportXingQiuUser {
 
     public static void main(String[] args) {
-        //Excel数据文件放在自己电脑上，能够找到的路径
+        // Excel数据文件放在自己电脑上，能够找到的路径
         String fileName = "F:\\Code\\WriteCodes\\Vue\\PartnerMatchSystem\\server\\src\\main\\resources\\testExcel.xlsx";
         // 这里 需要指定读用哪个class去读，然后读取第一个sheet 同步读取会自动finish
         List<XingQiuTableUserInfo> userInfoList =
