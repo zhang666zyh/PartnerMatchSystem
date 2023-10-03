@@ -1,12 +1,17 @@
 package com.example.usercenter.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.example.usercenter.common.BaseResponse;
+import com.example.usercenter.common.ErrorCode;
 import com.example.usercenter.constant.UserConstant;
+import com.example.usercenter.exception.BusinessException;
 import com.example.usercenter.model.domain.User;
 import com.example.usercenter.model.domain.request.UserLoginRequest;
 import com.example.usercenter.model.domain.request.UserRegisterRequest;
 import com.example.usercenter.service.UserService;
+import com.example.usercenter.utils.ResultUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -93,6 +98,15 @@ public class UserController {
 
         // 将查询到的所有用户对象, 密码都设置为空
         return userList.stream().map(user -> userService.getSafetyUser(user)).collect(Collectors.toList());
+    }
+
+    @GetMapping("/search/tags")
+    public BaseResponse<List<User>> searchUsersByTags(@RequestParam(required = false) List<String> tagNameList){
+        if(CollectionUtils.isEmpty(tagNameList)){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        List<User> userList = userService.searchUserByTags(tagNameList);
+        return ResultUtils.success(userList);
     }
 
     @PostMapping("/delete")

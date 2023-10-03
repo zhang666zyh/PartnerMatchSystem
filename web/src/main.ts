@@ -6,6 +6,7 @@ import {
     Form, Field, Button, Card
 } from 'vant'
 import {router} from "./router/index.js"
+import myAxios from "./plugins/myAxios.js"
 
 const app = createApp(App)
 app.use(NavBar).use(Icon).use(Tabbar)
@@ -14,5 +15,8 @@ app.use(NavBar).use(Icon).use(Tabbar)
     .use(Cell)
     .use(Form).use(Field).use(Button).use(Card)
 app.use(router)
+
+// global variable
+app.config.globalProperties.myAxios = myAxios;
 
 app.mount('#app')
