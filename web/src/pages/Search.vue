@@ -53,7 +53,9 @@ const originTagList = [
     text: '年纪',
     children: [
       {text: '大一', id: '大一'},
-      {text: '大二', id: '大二'}
+      {text: '大二', id: '大二'},
+      {text: '大三', id: '大三'},
+      {text: '大四', id: '大四'},
     ]
   },
 ] // 原始标签列表

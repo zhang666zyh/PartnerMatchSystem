@@ -25,13 +25,15 @@ import java.util.stream.Collectors;
  */
 @RestController
 @RequestMapping("/user")
+@CrossOrigin(origins = {"http://localhost:5173"}, allowCredentials = "true")
+
 public class UserController {
 
     @Resource
     private UserService userService;
 
     @PostMapping("/register")
-    public Long userRegister(@RequestBody UserRegisterRequest userRegisterRequest) {
+    public BaseResponse<Long> userRegister(@RequestBody UserRegisterRequest userRegisterRequest) {
 
         if (userRegisterRequest == null) {
             return null;
@@ -47,11 +49,11 @@ public class UserController {
 
         long result = userService.userRegister(userRegisterRequest);
 
-        return result;
+        return ResultUtils.success(result);
     }
 
     @PostMapping("/login")
-    public User userLogin(@RequestBody UserLoginRequest userLoginRequest, HttpServletRequest request) {
+    public BaseResponse<User> userLogin(@RequestBody UserLoginRequest userLoginRequest, HttpServletRequest request) {
 
         if (userLoginRequest == null) {
             return null;
@@ -64,33 +66,35 @@ public class UserController {
         }
 
 
-        return userService.userLogin(userAccount, userPassword, request);
+        User user = userService.userLogin(userAccount, userPassword, request);
+        return ResultUtils.success(user);
     }
 
     @GetMapping("/current")
-    public User getCurrentUser(HttpServletRequest request){
+    public BaseResponse<User> getCurrentUser(HttpServletRequest request) {
         Object userObj = request.getSession().getAttribute(UserConstant.USER_LOGIN_STATE);
-        User currentUser = (User)userObj;
-        if(currentUser == null){
+        User currentUser = (User) userObj;
+        if (currentUser == null) {
             return null;
         }
 
         long userId = currentUser.getId();
         User user = userService.getById(userId);
 
-        return userService.getSafetyUser(user);
+        User safetyUser = userService.getSafetyUser(user);
+        return ResultUtils.success(safetyUser);
 
     }
 
     @GetMapping("/search")
-    public List<User> searchUsers(String username, HttpServletRequest request){
+    public List<User> searchUsers(String username, HttpServletRequest request) {
         // 鉴权
-        if(!isAdmin(request)){
+        if (!userService.isAdmin(request)) {
             return new ArrayList<>();
         }
 
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-        if(StringUtils.isNotBlank(username)){
+        if (StringUtils.isNotBlank(username)) {
             queryWrapper.like("username", username);
         }
 
@@ -101,8 +105,8 @@ public class UserController {
     }
 
     @GetMapping("/search/tags")
-    public BaseResponse<List<User>> searchUsersByTags(@RequestParam(required = false) List<String> tagNameList){
-        if(CollectionUtils.isEmpty(tagNameList)){
+    public BaseResponse<List<User>> searchUsersByTags(@RequestParam(required = false) List<String> tagNameList) {
+        if (CollectionUtils.isEmpty(tagNameList)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         List<User> userList = userService.searchUserByTags(tagNameList);
@@ -110,34 +114,43 @@ public class UserController {
     }
 
     @PostMapping("/delete")
-    public boolean deleteUser(@RequestBody long id, HttpServletRequest request){
-        if(!isAdmin(request)){
+    public boolean deleteUser(@RequestBody long id, HttpServletRequest request) {
+        if (!userService.isAdmin(request)) {
             return false;
         }
 
-        if(id <= 0){
+        if (id <= 0) {
             return false;
         }
 
         return userService.removeById(id);
     }
 
-    // 判断是否是管理员
-    private boolean isAdmin(HttpServletRequest request){
-        // 鉴权
-        // 仅管理员可查询
-        Object userObj = request.getSession().getAttribute(UserConstant.USER_LOGIN_STATE);
-        User user = (User) userObj;
-        return user != null || user.getUserRole() == UserConstant.ADMIN_ROLE;
-    }
-
     // 注销
     @PostMapping("/logout")
-    public Integer userLogout(HttpServletRequest request){
-        if(request == null){
+    public Integer userLogout(HttpServletRequest request) {
+        if (request == null) {
             return null;
         }
 
         return userService.userLogout(request);
+    }
+
+    // 修改
+    @PostMapping("/update")
+    public BaseResponse<Integer> updateUser(@RequestBody User user, HttpServletRequest httpServletRequest) {
+        // 1.校验参数是否为空
+        if (user == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        // 2.检验权限
+        User loginUser = userService.getLoginUser(httpServletRequest);
+        if (loginUser == null) {
+            throw new BusinessException(ErrorCode.NO_AUTH);
+        }
+
+        // 3.触发更新
+        int result = userService.updateUser(user, loginUser);
+        return ResultUtils.success(result);
     }
 }

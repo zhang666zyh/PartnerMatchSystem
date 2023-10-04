@@ -3,20 +3,17 @@ import App from './App.vue'
 import {
     NavBar, Icon, Tabbar, TabbarItem, Search,
     Divider, Tag, TreeSelect, Row, Col, Cell,
-    Form, Field, Button, Card
+    Form, Field, Button, Card, Empty, Form, Field, CellGroup
 } from 'vant'
 import {router} from "./router/index.js"
-import myAxios from "./plugins/myAxios.js"
 
 const app = createApp(App)
 app.use(NavBar).use(Icon).use(Tabbar)
     .use(TabbarItem).use(Search).use(Divider)
     .use(Tag).use(TreeSelect).use(Row).use(Col)
     .use(Cell)
-    .use(Form).use(Field).use(Button).use(Card)
+    .use(Form).use(Field).use(CellGroup).use(Button).use(Card).use(Empty)
 app.use(router)
 
-// global variable
-app.config.globalProperties.myAxios = myAxios;
 
 app.mount('#app')

@@ -228,7 +228,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         // 2.在内存中判断是否包含要求的标签
         return userList.stream().filter(user -> {
             String tagsStr = user.getTags();
-            Set<String> tempTagNameSet = gson.fromJson(tagsStr, new TypeToken<Set<String>>() {}.getType());
+            Set<String> tempTagNameSet = gson.fromJson(tagsStr, new TypeToken<Set<String>>() {
+            }.getType());
             tempTagNameSet = Optional.ofNullable(tempTagNameSet).orElse(new HashSet<>());
             for (String tagName : tagNameList) {
                 if (!tempTagNameSet.contains(tagName)) {
@@ -237,6 +238,62 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             }
             return true;
         }).map(this::getSafetyUser).collect(Collectors.toList());
+    }
+
+    @Override
+    public int updateUser(User user, User loginUser) {
+        // TODO 查询
+        long userId = user.getId();
+        if (userId <= 0) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+
+
+        // 1.如果是管理员, 则允许更新任意用户
+        // 2.如果不是管理员, 只允许更新当前(自己的信息)
+        if (!isAdmin(user) && userId != loginUser.getId()) {
+            throw new BusinessException(ErrorCode.NO_AUTH);
+        }
+
+        User oldUser = userMapper.selectById(userId);
+        if (oldUser == null) {
+            throw new BusinessException(ErrorCode.NULL_ERROR);
+        }
+
+        return userMapper.updateById(user);
+    }
+
+
+    // 判断是否是管理员
+    @Override
+    public boolean isAdmin(User loginUser) {
+        // 鉴权
+        // 仅管理员可查询
+        return loginUser != null || loginUser.getUserRole() == UserConstant.ADMIN_ROLE;
+    }
+
+    // 判断是否是管理员
+    @Override
+    public boolean isAdmin(HttpServletRequest request) {
+        // 鉴权
+        // 仅管理员可查询
+        Object userObj = request.getSession().getAttribute(UserConstant.USER_LOGIN_STATE);
+        User user = (User) userObj;
+        return user != null || user.getUserRole() == UserConstant.ADMIN_ROLE;
+    }
+
+    @Override
+    public User getLoginUser(HttpServletRequest httpServletRequest) {
+        if (httpServletRequest == null) {
+            return null;
+        }
+
+        Object userObj = httpServletRequest.getSession().getAttribute(UserConstant.USER_LOGIN_STATE);
+        if (userObj == null) {
+            throw new BusinessException(ErrorCode.NO_AUTH);
+        }
+
+        return (User) userObj;
     }
 
     /**
@@ -259,5 +316,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         List<User> userList = userMapper.selectList(queryWrapper);
         return userList.stream().map(this::getSafetyUser).collect(Collectors.toList());
     }
+
 
 }
