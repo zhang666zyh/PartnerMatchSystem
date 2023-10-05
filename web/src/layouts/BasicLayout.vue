@@ -6,17 +6,23 @@
       left-arrow
       @click-left="onClickLeft"
       @click-right="onClickRight"
+      :fixed="true"
+      ref="headerRef"
   >
     <template #right>
       <van-icon name="search" size="18"/>
     </template>
   </van-nav-bar>
 
-  <div id="content">
+  <div id="content"
+       :style="{
+                'padding-bottom': footerHeight + 'px',
+                'padding-top': headerHeight + 'px'
+        }">
     <router-view></router-view>
   </div>
 
-  <van-tabbar v-model="active" @change="onChange">
+  <van-tabbar v-model="active" @change="onChange" ref="footerRef">
     <van-tabbar-item icon="home-o" name="">主页</van-tabbar-item>
     <van-tabbar-item icon="search" name="team">队伍</van-tabbar-item>
     <van-tabbar-item icon="friends-o" name="user">个人</van-tabbar-item>
@@ -25,10 +31,19 @@
 </template>
 
 <script setup>
-import {ref} from 'vue'
+import {onMounted, ref} from 'vue'
 import {useRouter} from 'vue-router'
 
 const router = useRouter()
+const headerRef = ref(null)
+const footerRef = ref(null)
+const headerHeight = ref(50)
+const footerHeight = ref(50)
+
+onMounted(() => {
+  headerHeight.value = headerRef.value.$el.clientHeight;
+  footerHeight.value = footerRef.value.$el.clientHeight;
+})
 
 // nav's left and right click event
 const onClickLeft = () => {

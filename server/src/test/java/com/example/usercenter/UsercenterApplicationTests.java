@@ -11,7 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @SpringBootTest
-class UsercenterApplicationTests {
+public class UsercenterApplicationTests {
     @Resource
     private UserService userService;
 
@@ -21,5 +21,7 @@ class UsercenterApplicationTests {
         List<User> userList = userService.searchUserByTags(tagNameList);
         Assert.assertNotNull(userList);
     }
+
+
 
 }
