@@ -9,7 +9,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2WebMvc;
 @SpringBootApplication
 @MapperScan("com.example.usercenter.mapper")
 @EnableSwagger2WebMvc
-@EnableScheduling
+//@EnableScheduling
 public class UsercenterApplication {
 
     public static void main(String[] args) {

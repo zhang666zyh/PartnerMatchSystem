@@ -1,10 +1,7 @@
 package com.example.usercenter.once;
 
-import java.util.Date;
-
 import com.example.usercenter.mapper.UserMapper;
 import com.example.usercenter.model.domain.User;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StopWatch;
 

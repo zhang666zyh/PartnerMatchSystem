@@ -2,7 +2,7 @@ package com.example.usercenter.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.example.usercenter.model.domain.User;
-import com.example.usercenter.model.domain.request.UserRegisterRequest;
+import com.example.usercenter.model.request.UserRegisterRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;

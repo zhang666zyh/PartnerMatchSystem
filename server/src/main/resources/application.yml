@@ -21,14 +21,14 @@ spring:
   # mysql
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/partner_manage_system
+    url: jdbc:mysql://localhost:3306/partner_manage_system?serverTimezone=Asia/Shanghai
     username: root
     password: 123456
   # redis
   redis:
     port: 6379
     host: localhost
-    database: 0
+    database: 1
 
   session:
     timeout: 86400  # session有效时间 (1天)

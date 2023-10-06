@@ -1,4 +1,5 @@
 import axios, {AxiosInstance} from "axios";
+import {router} from "../router"
 
 const myAxios: AxiosInstance = axios.create({
     baseURL: "http://localhost:8080/api"
@@ -16,6 +17,11 @@ myAxios.interceptors.request.use(function (config) {
 myAxios.interceptors.response.use(function (response) {
     return response.data;
 }, function (error) {
+
+    if(error.response.data.message == '无权限'){
+        router.push("/userLogin");
+    }
+    
     return Promise.reject(error);
 });
 

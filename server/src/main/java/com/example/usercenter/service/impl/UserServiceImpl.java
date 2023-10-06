@@ -7,7 +7,7 @@ import com.example.usercenter.constant.UserConstant;
 import com.example.usercenter.exception.BusinessException;
 import com.example.usercenter.mapper.UserMapper;
 import com.example.usercenter.model.domain.User;
-import com.example.usercenter.model.domain.request.UserRegisterRequest;
+import com.example.usercenter.model.request.UserRegisterRequest;
 import com.example.usercenter.service.UserService;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -25,7 +25,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 /**

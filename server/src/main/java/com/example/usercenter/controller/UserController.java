@@ -7,8 +7,8 @@ import com.example.usercenter.common.ErrorCode;
 import com.example.usercenter.constant.UserConstant;
 import com.example.usercenter.exception.BusinessException;
 import com.example.usercenter.model.domain.User;
-import com.example.usercenter.model.domain.request.UserLoginRequest;
-import com.example.usercenter.model.domain.request.UserRegisterRequest;
+import com.example.usercenter.model.request.UserLoginRequest;
+import com.example.usercenter.model.request.UserRegisterRequest;
 import com.example.usercenter.service.UserService;
 import com.example.usercenter.utils.ResultUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -39,6 +39,7 @@ public class UserController {
 
     @Resource
     private RedisTemplate<String, Object> redisTemplate;
+
 
     @PostMapping("/register")
     public BaseResponse<Long> userRegister(@RequestBody UserRegisterRequest userRegisterRequest) {
