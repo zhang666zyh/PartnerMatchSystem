@@ -13,7 +13,6 @@ import {ref, onMounted} from 'vue'
 import {useRoute} from 'vue-router'
 import qs from 'qs'
 import myAxios from "../plugins/myAxios";
-import UserCardList from "../components/UserCardList.vue";
 
 const route = useRoute()
 const {tags} = route.query

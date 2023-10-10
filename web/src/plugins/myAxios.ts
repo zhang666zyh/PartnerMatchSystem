@@ -17,7 +17,7 @@ myAxios.interceptors.request.use(function (config) {
 myAxios.interceptors.response.use(function (response) {
     return response.data;
 }, function (error) {
-
+    console.log(error)
     if(error.response.data.message == '无权限'){
         router.push("/userLogin");
     }

@@ -6,6 +6,7 @@ import com.example.usercenter.model.domain.Team;
 import com.example.usercenter.model.domain.User;
 import com.example.usercenter.model.dto.TeamQuery;
 import com.example.usercenter.model.request.TeamJoinRequest;
+import com.example.usercenter.model.request.TeamQuitRequest;
 import com.example.usercenter.model.request.TeamUpdateRequest;
 import com.example.usercenter.model.vo.TeamUserVO;
 
@@ -51,4 +52,23 @@ public interface TeamService extends IService<Team> {
      * @return
      */
     boolean joinTeam(TeamJoinRequest teamJoinRequest, User loginUser);
+
+    /**
+     * 退出队伍
+     *
+     * @param teamQuitRequest
+     * @param loginUser
+     * @return
+     */
+    boolean quitTeam(TeamQuitRequest teamQuitRequest, User loginUser);
+
+    /**
+     * 解散(删除)队伍
+     *
+     * @param id
+     * @param loginUser
+     * @return
+     */
+    boolean deleteTeam(Long id, User loginUser);
+
 }
