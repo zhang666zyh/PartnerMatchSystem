@@ -18,11 +18,11 @@ import com.example.usercenter.model.vo.UserVO;
 import com.example.usercenter.service.TeamService;
 import com.example.usercenter.service.UserService;
 import com.example.usercenter.service.UserTeamService;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -134,6 +134,7 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team>
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public List<TeamUserVO> listTeams(TeamQuery teamQuery, boolean isAdmin) {
 
         QueryWrapper<Team> queryWrapper = new QueryWrapper<>();
@@ -143,6 +144,11 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team>
             Long id = teamQuery.getId();
             if (id != null && id > 0) {
                 queryWrapper.eq("id", id);
+            }
+
+            List<Long> idList = teamQuery.getIdList();
+            if (CollectionUtils.isNotEmpty(idList)) {
+                queryWrapper.in("id", idList);
             }
 
             String searchText = teamQuery.getSearchText();
@@ -188,7 +194,7 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team>
         }
 
         // 不显示已过期的队伍
-        queryWrapper.and(qw -> qw.lt("expireTime", new Date()).or().isNull("expireTime"));
+        queryWrapper.and(qw -> qw.gt("expireTime", new Date()).or().isNull("expireTime"));
 
         List<Team> teamList = this.list(queryWrapper);
 

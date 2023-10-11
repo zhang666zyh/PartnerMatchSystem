@@ -3,7 +3,7 @@ import App from './App.vue'
 import {
     NavBar, Icon, Tabbar, TabbarItem, Search,
     Divider, Tag, TreeSelect, Row, Col, Cell,
-    Form, Field, Button, Card, Empty, Form, Field, CellGroup, DatetimePicker, Stepper,
+    Form, Field, Button, Card, Empty, CellGroup, DatetimePicker, Stepper,
     RadioGroup, Radio, Popup
 } from 'vant'
 import {router} from "./router/index.js"

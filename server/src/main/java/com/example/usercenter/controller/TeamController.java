@@ -7,6 +7,7 @@ import com.example.usercenter.common.ErrorCode;
 import com.example.usercenter.exception.BusinessException;
 import com.example.usercenter.model.domain.Team;
 import com.example.usercenter.model.domain.User;
+import com.example.usercenter.model.domain.UserTeam;
 import com.example.usercenter.model.dto.TeamQuery;
 import com.example.usercenter.model.request.TeamAddRequest;
 import com.example.usercenter.model.request.TeamJoinRequest;
@@ -15,6 +16,7 @@ import com.example.usercenter.model.request.TeamUpdateRequest;
 import com.example.usercenter.model.vo.TeamUserVO;
 import com.example.usercenter.service.TeamService;
 import com.example.usercenter.service.UserService;
+import com.example.usercenter.service.UserTeamService;
 import com.example.usercenter.utils.ResultUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -22,7 +24,10 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * 队伍接口
@@ -38,6 +43,9 @@ public class TeamController {
 
     @Resource
     private TeamService teamService;
+
+    @Resource
+    private UserTeamService userTeamService;
 
 
     @PostMapping("/add")
@@ -89,6 +97,59 @@ public class TeamController {
 
         boolean isAdmin = userService.isAdmin(httpServletRequest);
         List<TeamUserVO> teamList = teamService.listTeams(teamQuery, isAdmin);
+
+        return ResultUtils.success(teamList);
+    }
+
+    /**
+     * 获取我创建的队伍
+     *
+     * @param teamQuery
+     * @param httpServletRequest
+     * @return
+     */
+    @GetMapping("/list/mycreate")
+    public BaseResponse<List<TeamUserVO>> listMyCreateTeams(TeamQuery teamQuery, HttpServletRequest httpServletRequest) {
+        if (teamQuery == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+
+        User loginUser = userService.getLoginUser(httpServletRequest);
+        teamQuery.setUserId(loginUser.getId());
+        List<TeamUserVO> teamList = teamService.listTeams(teamQuery, true);
+
+        return ResultUtils.success(teamList);
+    }
+
+    /**
+     * 获取我加入的队伍
+     *
+     * @param teamQuery
+     * @param httpServletRequest
+     * @return
+     */
+    @GetMapping("/list/myjoin")
+    public BaseResponse<List<TeamUserVO>> listMyJoinTeams(TeamQuery teamQuery, HttpServletRequest httpServletRequest) {
+        if (teamQuery == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+
+        User loginUser = userService.getLoginUser(httpServletRequest);
+
+        /**
+         * 查询操作应该写在service里, 这里偷懒了就直接写在这了
+         */
+        QueryWrapper<UserTeam> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("userId", loginUser.getId());
+        List<UserTeam> userTeamList = userTeamService.list(queryWrapper);
+
+        // 取出不重复的队伍id
+        Map<Long, List<UserTeam>> listlMap = userTeamList.stream()
+                .collect(Collectors.groupingBy(UserTeam::getTeamId));
+        List<Long> idList = new ArrayList<>(listlMap.keySet());
+        teamQuery.setIdList(idList);
+
+        List<TeamUserVO> teamList = teamService.listTeams(teamQuery, true);
 
         return ResultUtils.success(teamList);
     }

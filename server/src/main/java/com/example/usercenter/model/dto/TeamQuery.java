@@ -3,6 +3,8 @@ package com.example.usercenter.model.dto;
 import com.example.usercenter.common.PageRequest;
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * 队伍查询封装类
  */
@@ -13,6 +15,11 @@ public class TeamQuery extends PageRequest {
      * id
      */
     private Long id;
+
+    /**
+     * 多id查询
+     */
+    private List<Long> idList;
 
     /**
      * 搜索关键词(同时对队伍名称和描述搜索)
